@@ -5,6 +5,8 @@ The utility bake in or integrate some useful libs(I think)
 Libs are baked into:
 
 - lua(v5.4.4) + sol2(v3.3.0)
+- QrGen
+- libmagic
 - unrar
 - 7z
 - sqlite(3.40.1)
