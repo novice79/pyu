@@ -11,6 +11,7 @@ set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 
 file(GLOB_RECURSE SOURCE_FILES 
     "src/*.cpp"
+    "qrgen/*.cpp"
     "log/*.cpp"
     "lua/*.c"
     "sqlite/*.c"
@@ -18,6 +19,8 @@ file(GLOB_RECURSE SOURCE_FILES
 )
 file(GLOB HEADER_FILES 
     "include/pyu.h" 
+    "qrgen/qrcodegen.hpp"
+    "qrgen/QrToPng.h"
     "log/log.h"
     "lua/lua.h"
     "lua/lualib.h"

@@ -45,7 +45,7 @@ cmake --install "$dir/lib"
 
 # build example exe
 cmake -GNinja -H"examples" -B$dir \
--DCMAKE_FIND_ROOT_PATH="$PRBUILT;$PREFIX" \
+-DCMAKE_FIND_ROOT_PATH="$PREFIX;$PRBUILT" \
 -DCMAKE_INSTALL_PREFIX=$examplePrefix \
 -DCMAKE_BUILD_TYPE=Release 
 

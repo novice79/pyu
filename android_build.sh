@@ -71,7 +71,7 @@ cmake -GNinja -H"examples" -B$dir \
 -DCMAKE_C_FLAGS="-w" \
 -DANDROID_NATIVE_API_LEVEL=$API \
 -DANDROID_TOOLCHAIN=clang \
--DCMAKE_FIND_ROOT_PATH="${PRBUILT};${PREFIX}" \
+-DCMAKE_FIND_ROOT_PATH="${PREFIX};${PRBUILT}" \
 -DCMAKE_INSTALL_PREFIX="$examplePrefix" \
 -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
 -DCMAKE_BUILD_TYPE=Release 

@@ -19,18 +19,8 @@ int main(int argc, char **argv)
 	// open some common libraries
 	lua.open_libraries(sol::lib::base, sol::lib::package);
 	lua.script("print('lua bark bark bark!')");
-    try
-    {
-        throw "hello world";
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << "exception catched " << e.what() << '\n';
-    }
-    catch(...)
-    {
-        std::cerr << "exception catched " << '\n';
-    }
-	std::cout << std::endl;
+    auto txt = "http://127.0.0.1:8888";
+    pyu::QrToPng("aaa.png", txt).writeToPng();
+	std::cout << "write " << txt << " to aaa.png file" << std::endl;
     return 0;
 }

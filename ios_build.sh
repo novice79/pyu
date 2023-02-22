@@ -65,7 +65,7 @@ cmake -H"examples" -B"$dir" \
 -DCMAKE_TOOLCHAIN_FILE="$PWD/cmake/ios.toolchain.cmake" \
 -DDEPLOYMENT_TARGET=13.0 \
 -DPLATFORM=OS64 \
--DCMAKE_FIND_ROOT_PATH="${PRBUILT};${PREFIX}" \
+-DCMAKE_FIND_ROOT_PATH="${PREFIX};${PRBUILT}" \
 -DCMAKE_BUILD_TYPE=Release \
 -DCMAKE_INSTALL_PREFIX=$examplePrefix
 # grep DEVELOPMENT_TEAM _build_ios/main.xcodeproj/project.pbxproj

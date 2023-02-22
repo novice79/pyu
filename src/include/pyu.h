@@ -3,6 +3,8 @@
 #include "log.h"
 #include "sol/sol.hpp"
 #include "db.h"
+#include "QrToPng.h"
+
 namespace pyu
 {
     inline std::shared_ptr<Log> create_logger(std::string log_path = ".", std::string name = "py")
