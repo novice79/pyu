@@ -16,6 +16,7 @@
 # export CFLAGS="${HOST_FLAGS} ${OPT_FLAGS} -I${PREFIX}/include"
 # export CXXFLAGS="${HOST_FLAGS} ${OPT_FLAGS} -I${PREFIX}/include"
 # export LDFLAGS="${HOST_FLAGS} -L${PREFIX}/lib "
+set -e
 scirptName=$0
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         PRBUILT="/data/clib-prebuilt/ios"

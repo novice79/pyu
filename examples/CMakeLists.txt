@@ -28,7 +28,7 @@ find_package(Boost REQUIRED COMPONENTS
     json
     log_setup 
     log 
-    # program_options
+    program_options
     system 
     # locale 
 )
@@ -108,7 +108,30 @@ include_directories(${pyu_INCLUDE_DIRS})
 #     message(STATUS "Hello from Android build!")
 #     find_library(log-lib log)
 # endif()
+
+find_library(lib7z NAMES 7za REQUIRED)
+message("lib7z=${lib7z}")
+# add_library(7z STATIC IMPORTED)
+# set_target_properties(7z 
+#     PROPERTIES IMPORTED_LOCATION 
+#     ${lib7z}
+# )
+
 foreach(t ${targets})
+    if (WIN32)
+        set_target_properties(${t} PROPERTIES
+            LINK_FLAGS "/WHOLEARCHIVE"
+        )
+    elseif (APPLE)
+        set_target_properties(${t} PROPERTIES
+            LINK_FLAGS "-Wl,-all_load"
+        )
+        target_link_libraries(${t} ${lib7z})
+        # target_link_libraries(${t} -Wl,-force_load 7z)
+    else ()
+        # target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive 7za -Wl,--no-whole-archive )
+        target_link_libraries(${t} -Wl,--whole-archive ${lib7z} -Wl,--no-whole-archive )
+    endif ()
     target_link_libraries(
         ${t}
         ${Boost_LIBRARIES}

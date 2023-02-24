@@ -2,6 +2,7 @@
 
 #include <pyu/pyu.h>
 
+
 int main(int argc, char **argv) 
 {
     auto l = pyu::create_logger("log", "aaa");
@@ -22,5 +23,9 @@ int main(int argc, char **argv)
     auto txt = "http://127.0.0.1:8888";
     pyu::QrToPng("aaa.png", txt).writeToPng();
 	std::cout << "write " << txt << " to aaa.png file" << std::endl;
+    if(argc < 2) return 0;
+    printf("argv[1]=%s\n", argv[1]);
+    // pyu::call_main(main_unrar, argv[1]);
+    pyu::call_main(main_7z, argv[1]);
     return 0;
 }

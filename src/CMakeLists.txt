@@ -7,8 +7,8 @@ endif()
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-
-
+add_subdirectory(7z)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w -fexceptions -frtti")
 file(GLOB_RECURSE SOURCE_FILES 
     "src/*.cpp"
     "qrgen/*.cpp"
@@ -19,6 +19,7 @@ file(GLOB_RECURSE SOURCE_FILES
 )
 file(GLOB HEADER_FILES 
     "include/pyu.h" 
+    "7z/p7z.h"
     "qrgen/qrcodegen.hpp"
     "qrgen/QrToPng.h"
     "log/log.h"
@@ -33,9 +34,17 @@ file(GLOB HEADER_FILES
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+include(unrar/files.cmake)
+# include(7z/files.cmake)
+
+add_library(${PROJECT_NAME} STATIC 
+    ${SOURCE_FILES} 
+    ${UNRAR_FILES}
+    # ${7z_FILES}
+)
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 include_directories(
+    "${CMAKE_SOURCE_DIR}/inc"
     "${CMAKE_SOURCE_DIR}/sqlite"
 )
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
@@ -50,7 +59,7 @@ find_package(Boost 1.79.0 REQUIRED COMPONENTS
     json
     log_setup 
     log 
-    # program_options
+    program_options
     system 
     # locale 
 )
@@ -68,10 +77,25 @@ target_link_libraries(
     ${Boost_LIBRARIES}
     ${OPENSSL_LIBRARIES}
     ${ZLIB_LIBRARIES}
+    # 7za
 )
+if (WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        LINK_FLAGS "/WHOLEARCHIVE"
+    )
+elseif (APPLE)
+    # set_target_properties(${PROJECT_NAME} PROPERTIES
+    #     LINK_FLAGS "-Wl,-all_load"
+    # )
+    # target_link_libraries(${PROJECT_NAME} PUBLIC 7za)
+    target_link_libraries(${PROJECT_NAME} PUBLIC -Wl,-force_load 7za)
+else ()
+    target_link_libraries(${PROJECT_NAME} PUBLIC -Wl,--whole-archive 7za -Wl,--no-whole-archive )
+endif ()
+
 install(DIRECTORY sol DESTINATION "include/pyu")
 install(
-    TARGETS ${PROJECT_NAME} 
+    TARGETS ${PROJECT_NAME} 7za
     EXPORT pyu
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
