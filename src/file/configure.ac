@@ -254,5 +254,5 @@ if  test "$ac_cv_header_lzlib_h$ac_cv_lib_lz_LZ_decompress_open" = "yesyes"; the
   AC_DEFINE([LZLIBSUPPORT], 1, [Enable lzlib compression support])
 fi
 
-AC_CONFIG_FILES([Makefile src/Makefile magic/Makefile tests/Makefile doc/Makefile python/Makefile libmagic.pc])
+AC_CONFIG_FILES([Makefile src/Makefile magic/Makefile libmagic.pc])
 AC_OUTPUT

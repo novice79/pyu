@@ -21,10 +21,6 @@ libmagic_la_LIBADD = -lm $(LTLIBOBJS) $(MINGWLIBS)
 
 file_SOURCES = file.c seccomp.c
 file_LDADD = libmagic.la -lm
-CLEANFILES = magic.h
-EXTRA_DIST = magic.h.in cdf.mk BNF memtest.c
-HDR= $(top_srcdir)/src/magic.h.in
-BUILT_SOURCES = magic.h
+EXTRA_DIST = cdf.mk BNF memtest.c
 
-magic.h:	${HDR}
-	sed -e "s/X.YY/$$(echo @VERSION@ | tr -d .)/" < ${HDR} > $@
+

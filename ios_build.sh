@@ -48,6 +48,7 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+# CMAKE_PREFIX_PATH vs CMAKE_FIND_ROOT_PATH
 cmake -H"src" -B"$dir/lib" \
 -G Xcode \
 -DCMAKE_TOOLCHAIN_FILE="$PWD/cmake/ios.toolchain.cmake" \

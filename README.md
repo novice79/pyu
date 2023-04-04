@@ -1,6 +1,6 @@
 # pyu stand for piao yun utility
 
-The utility bake in or integrate some useful libs(I think)
+The utility baked in or integrated some useful libs(I think)
 
 Libs are baked into:
 
@@ -10,11 +10,16 @@ Libs are baked into:
 - [unrar(v6.2.5)](https://www.rarlab.com/rar/unrarsrc-6.2.5.tar.gz)
 - [7z(v16.02)](https://sourceforge.net/projects/p7zip/files/)
 - [sqlite(v3.40.1)](https://www.sqlite.org/index.html)
-- mailio
+<!-- - [mailio](https://github.com/karastojko/mailio) -->
 
 Dependent libs:  
 
-    zlib
-    openssl
-    boost
+- [zlib](https://github.com/madler/zlib)
+- [openssl](https://github.com/openssl/openssl)
+- [boost](https://github.com/boostorg/boost)
+    - system
+    - filesystem
+    - json
+    - log
+    - program_options
 

@@ -1,6 +1,15 @@
 gh repo create pyu --public
 git remote add origin n79:novice79/pyu
 <!-- git remote set-url origin n79:novice79/pyu -->
+sudo apt install p7zip-full
+<!-- 
+export HOMEBREW_NO_ANALYTICS=1
+brew update
+brew upgrade
+brew info gcc
+brew install gcc
+brew cleanup 
+-->
 
 lldb --file ./dist/bin/app
 
@@ -43,3 +52,7 @@ ar -M $lib
 libtool -static -o dist/darwin20/lib/libpyu.a_ \
 /Users/piao/git/7z/dist/macos/lib/lib7za.a \
 dist/darwin20/lib/libpyu.a
+
+${CMAKE_SYSTEM_PROCESSOR}-novice-${CMAKE_SYSTEM_NAME}
+
+zig c++ -target armeb-linux-musleabihf

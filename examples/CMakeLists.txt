@@ -10,49 +10,8 @@ set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -funwind-tables -fexceptions -frtti -lunwind")
-add_compile_options(-fvisibility=hidden -fexceptions -frtti)
-# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -l/Users/piao/clib-prebuilt/android/arm64-v8a/lib/libunwind.a")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -l/Users/piao/clib-prebuilt/android/arm64-v8a/lib/libunwind.a")
-
-# set(Boost_DEBUG ON)
-set(Boost_USE_STATIC_LIBS        ON) # only find static libs
-set(Boost_USE_MULTITHREADED      ON)
-# set(Boost_USE_STATIC_RUNTIME    OFF)
-
-find_package(Boost REQUIRED COMPONENTS 
-    date_time 
-    filesystem 
-    serialization
-    atomic 
-    json
-    log_setup 
-    log 
-    program_options
-    system 
-    # locale 
-)
-# find_package(Boost 1.77.0 REQUIRED COMPONENTS ALL)
-# find_package (Boost 1.79.0 REQUIRED COMPONENTS ALL PATHS "$ENV{HOME}/boost" NO_DEFAULT_PATH)
-# include_directories(${Boost_INCLUDE_DIRS})
-# target_link_libraries(${name}
-#     Boost::date_time 
-#     Boost::filesystem 
-#     Boost::regex 
-#     Boost::atomic 
-#     Boost::chrono 
-#     Boost::log_setup 
-#     Boost::thread 
-#     Boost::log 
-#     Boost::system 
-#     Boost::locale
-# )
-# https://cmake.org/cmake/help/latest/module/FindBoost.html
-# message("Boost_INCLUDE_DIRS=${Boost_INCLUDE_DIRS}")
-# message("Boost_LIBRARIES=${Boost_LIBRARIES}")
-# set(OPENSSL_USE_STATIC_LIBS TRUE)
-message("Boost_LIBRARY_DIRS=${Boost_LIBRARY_DIRS}")
-link_directories(${Boost_LIBRARY_DIRS})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w -fexceptions -frtti ")
+# add_compile_options(-fvisibility=hidden -fexceptions -frtti)
 # Make sure that your call to link_directories takes place before your call to the relevant add_executable
 file(GLOB SOURCE_FILES  "*.cpp")
 foreach(file ${SOURCE_FILES})
@@ -81,15 +40,6 @@ foreach(file ${SOURCE_FILES})
     endif()
 endforeach()
 
-find_package(OpenSSL 1.1.1 REQUIRED)
-message("OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}")
-message("OPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}")
-
-
-# sudo apt-get install libz-dev
-find_package(ZLIB REQUIRED)
-message("ZLIB_LIBRARIES=${ZLIB_LIBRARIES}")
-
 # only for windows
 # target_link_libraries(${name} wsock32)
 find_package(pyu 1.0.0 REQUIRED)
@@ -99,15 +49,6 @@ get_target_property(pyu_LIBRARIES pyu::pyu IMPORTED_LOCATION_RELEASE )
 message("pyu_LIBRARIES=${pyu_LIBRARIES}")
 message("pyu_VERSION=${pyu_VERSION}")
 include_directories(${pyu_INCLUDE_DIRS})
-# set(STATIC_LINK " -s -static  -static-libstdc++ -static-libgcc")
-# if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
-#     # set_property(TARGET ${name} APPEND_STRING PROPERTY LINK_FLAGS " ${STATIC_LINK}")
-#     string(APPEND CMAKE_EXE_LINKER_FLAGS "${STATIC_LINK}")
-# endif ()
-# if (ANDROID)
-#     message(STATUS "Hello from Android build!")
-#     find_library(log-lib log)
-# endif()
 
 find_library(lib7z NAMES 7za REQUIRED)
 message("lib7z=${lib7z}")
@@ -116,34 +57,37 @@ message("lib7z=${lib7z}")
 #     PROPERTIES IMPORTED_LOCATION 
 #     ${lib7z}
 # )
-
+message("CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}")
 foreach(t ${targets})
-    if (WIN32)
-        set_target_properties(${t} PROPERTIES
-            LINK_FLAGS "/WHOLEARCHIVE"
-        )
-    elseif (APPLE)
-        set_target_properties(${t} PROPERTIES
-            LINK_FLAGS "-Wl,-all_load"
-        )
-        target_link_libraries(${t} ${lib7z})
-        # target_link_libraries(${t} -Wl,-force_load 7z)
-    else ()
-        # target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive 7za -Wl,--no-whole-archive )
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        # using Clang
+        target_link_libraries(${t} -Wl,-all_load )
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        # using GCC
         target_link_libraries(${t} -Wl,--whole-archive ${lib7z} -Wl,--no-whole-archive )
-    endif ()
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+        # using Intel C++
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        # using Visual Studio C++
+        set_target_properties(${t} PROPERTIES LINK_FLAGS "/WHOLEARCHIVE" )
+    endif()
+    # if (WIN32)
+        
+    # elseif (APPLE)
+    #     set_target_properties(${t} PROPERTIES
+    #         LINK_FLAGS "-Wl,-all_load"
+    #     )
+    #     target_link_libraries(${t} ${lib7z})
+    #     # target_link_libraries(${t} -Wl,-force_load,${lib7z})
+    # else ()
+    #     # target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive 7za -Wl,--no-whole-archive )
+    #     target_link_libraries(${t} -Wl,--whole-archive ${lib7z} -Wl,--no-whole-archive )
+    # endif ()
     target_link_libraries(
         ${t}
-        ${Boost_LIBRARIES}
-        ${OPENSSL_LIBRARIES}
-        ${ZLIB_LIBRARIES}
-        # ZLIB::ZLIB
         pyu::pyu
         ${CMAKE_DL_LIBS} 
     )
-    # if (ANDROID)
-    #     target_link_libraries(${t} ${log-lib})
-    # endif()
     if(WIN32)
         target_link_libraries(${t} ws2_32 wsock32)
     endif()
@@ -153,9 +97,8 @@ foreach(t ${targets})
         install(TARGETS ${t} RUNTIME DESTINATION bin)
     endif()
     
-    
 endforeach()
-
+install(FILES "${CMAKE_CURRENT_LIST_DIR}/../misc/magic.mgc" DESTINATION bin)
 # otool -L  dist/app
 
 

@@ -1,8 +1,12 @@
 #include "commom.h"
 #include <boost/program_options/parsers.hpp>
 
-
-int pyu::call_main(MainFunc m, std::string args)
+fs::path pyu::exe_path(fs::path argv0)
+{
+    auto path = fs::canonical(fs::path(argv0).remove_filename());
+    return fs::system_complete(path);
+}
+int call_main(MainFunc m, std::string args)
 {
     auto parts = boost::program_options::split_unix(args);
     std::vector<char*> cstrings ;
