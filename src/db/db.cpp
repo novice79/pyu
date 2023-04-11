@@ -2,9 +2,10 @@
 
 using namespace std;
 
-DB::DB(std::string path)
+DB::DB(fs::path path)
 {
-    int rc = sqlite3_open(path.c_str(), &db_);
+    fs::create_directories(path.parent_path());
+    int rc = sqlite3_open(path.string().c_str(), &db_);
     if (rc)
     {
         printf("Opened sqlite database failed: %s\n", sqlite3_errmsg(db_)); 

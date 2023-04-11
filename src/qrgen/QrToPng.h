@@ -11,7 +11,8 @@
 #include <iostream>
 #include <memory>
 #include <string>
-
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 namespace pyu
 {
 class QrToPng {
@@ -28,7 +29,7 @@ public:
      * @param overwriteExistingFile Overwrite if a file with @fileName already exists?
      * @param ecc error correction (low,mid,high).
      */
-    QrToPng(std::string fileName, std::string text, 
+    QrToPng(fs::path fileName, std::string text, 
         int imgSize = 200, int minModulePixelSize = 3,
         bool overwriteExistingFile = true, 
         qrcodegen::QrCode::Ecc = qrcodegen::QrCode::Ecc::MEDIUM
@@ -41,7 +42,7 @@ public:
 
 private:
     std::string toSvgString(const qrcodegen::QrCode &qr, int border);
-    std::string _fileName;
+    fs::path _fileName;
     int _size;
     int _minModulePixelSize;
     std::string _text;

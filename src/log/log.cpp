@@ -6,17 +6,20 @@ namespace expr = boost::log::expressions;
 namespace sinks = boost::log::sinks;
 namespace keywords = boost::log::keywords;
 
-Log::Log(std::string log_path, std::string name)
+thread_local boost::log::sources::severity_logger< boost::log::trivial::severity_level > Log::lg_;
+
+Log::Log(fs::path log_path, std::string name)
 {
     if( !fs::exists(log_path) )
     {
-        fs::create_directory(log_path);
+        fs::create_directories(log_path);
     }
-    auto prefix = (boost::format("%1%/%2%_") % log_path % name).str();
+    auto prefix = (boost::format("%1%/%2%_") % log_path.string() % name).str();
     logging::add_file_log
     (
         keywords::file_name = prefix + "%Y-%m-%d.log",
-        keywords::rotation_size = 10 * 1024 * 1024,
+        // 5MiB limit to rotate
+        keywords::rotation_size = 5 * 1024 * 1024,
         keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0),
 		keywords::auto_flush = true,
         keywords::format = "[%TimeStamp%]:<%Severity%> %Message%",

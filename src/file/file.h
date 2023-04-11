@@ -28,10 +28,10 @@ private:
         return s + " " + concat_s(args...) ;
     }
 public:
-    FileMgr(std::string magic)
+    FileMgr(fs::path magic)
     {
         handle_ = ::magic_open(MAGIC_NONE | MAGIC_MIME);
-        magic_loaded_ = ::magic_load( handle_, magic.c_str() ) == 0;
+        magic_loaded_ = ::magic_load( handle_, magic.string().c_str() ) == 0;
         if( magic_loaded_ )
         {
             printf("load magic database succeed!\n");

@@ -7,7 +7,8 @@ using namespace std;
 
 int main(int argc, char **argv) 
 {
-    auto l = pyu::create_logger("log", "aaa");
+    auto exe_path{pyu::exe_path(argv[0])};
+    auto l = pyu::create_logger( exe_path / "log", "aaa");
     l->trace("hello world: %1%\n", "david");
     l->debug("你好，世界😀\n");
     l->info("hello world\n");
@@ -15,7 +16,7 @@ int main(int argc, char **argv)
     l->error("hello world\n");
     l->fatal("hello world\n");
 
-    auto db = pyu::create_db();
+    auto db = pyu::create_db(exe_path / "py.db");
     l->debug("db pass=%1%\n", db->get_pass() );
     l->warn( db->exec_sql("select * from user;") );
     sol::state lua;
@@ -23,12 +24,12 @@ int main(int argc, char **argv)
 	lua.open_libraries(sol::lib::base, sol::lib::package);
 	lua.script("print('lua bark bark bark!')");
     auto txt = "http://127.0.0.1:8888";
-    pyu::QrToPng("aaa.png", txt).writeToPng();
-	std::cout << "write " << txt << " to aaa.png file" << std::endl;
+    pyu::QrToPng(exe_path / "aaa.png", txt).writeToPng();
+	std::cout << "write " << txt << " to " << exe_path / "aaa.png" << std::endl;
 
-    auto f = pyu::create_fm( (pyu::exe_path(argv[0]) / "magic.mgc").string() );
-    f->file_info( pyu::exe_path(argv[0]) );
-    f->file_info( pyu::exe_path(argv[0]) / "magic.mgc" );
+    auto f = pyu::create_fm( exe_path / "magic.mgc" );
+    f->file_info( exe_path );
+    f->file_info( exe_path / "magic.mgc" );
     if(argc < 2) return 0;
     if( 2 == argc)
     {

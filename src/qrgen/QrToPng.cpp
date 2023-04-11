@@ -2,13 +2,11 @@
 // Created by remy on 02-06-20.
 //
 #include <sstream>
-#include <filesystem>
-namespace fs = std::filesystem;
 #include "TinyPngOut.hpp"
 #include "QrToPng.h"
 
 using namespace pyu;
-QrToPng::QrToPng(std::string fileName, std::string text, int imgSize, int minModulePixelSize,
+QrToPng::QrToPng(fs::path fileName, std::string text, int imgSize, int minModulePixelSize,
                  bool overwriteExistingFile, qrcodegen::QrCode::Ecc ecc) :
         _fileName(std::move(fileName)), _size(imgSize), _minModulePixelSize(minModulePixelSize), _text(std::move(text)),
         _overwriteExistingFile(overwriteExistingFile), _ecc(ecc) {
@@ -59,7 +57,7 @@ bool QrToPng::writeToSvg()
     }
     
     try{
-        std::ofstream out( fs::path(_fileName).replace_extension("svg") );
+        std::ofstream out( _fileName.replace_extension("svg").string() );
         std::string svg = toSvgString(_qr, 4);
         out << svg;
     }
@@ -90,20 +88,25 @@ bool QrToPng::writeToPng() {
     }
 
     if (_overwriteExistingFile and fs::exists(_fileName))
-        if (!fs::copy_file(_fileName, _fileName + ".tmp", fs::copy_options::overwrite_existing))
+        if (!fs::copy_file(
+                _fileName, 
+                _fileName.string() + ".tmp", 
+                fs::copy_options::overwrite_existing
+                )
+            )
             return false;
 
     auto result = _writeToPNG(_qr);
 
     if (result)
-        fs::remove(_fileName + ".tmp");
+        fs::remove(_fileName.string() + ".tmp");
 
     return result;
 
 }
 
 bool QrToPng::_writeToPNG(const qrcodegen::QrCode &qrData) const {
-    std::ofstream out(_fileName.c_str(), std::ios::binary);
+    std::ofstream out(_fileName.string(), std::ios::binary);
     int pngWH = _imgSizeWithBorder(qrData);
     TinyPngOut pngout(pngWH, pngWH, out);
 

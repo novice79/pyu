@@ -20,7 +20,7 @@ namespace fs = boost::filesystem;
 class Log 
 {
 public:
-    Log(std::string log_path = ".", std::string name = "py");
+    Log(fs::path log_path = ".", std::string name = "py");
     template<typename... Arguments>
     void trace(const std::string& fmt, const Arguments&... args)
     {
@@ -52,6 +52,6 @@ public:
         BOOST_LOG_SEV(this->lg_, boost::log::trivial::fatal) << boost::str((boost::format(fmt) % ... % args));
     }
 private:
-    boost::log::sources::severity_logger< boost::log::trivial::severity_level > lg_;
+    thread_local static boost::log::sources::severity_logger< boost::log::trivial::severity_level > lg_;
 
 }; // class end
