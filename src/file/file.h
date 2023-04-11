@@ -141,7 +141,7 @@ public:
             fi["ext"] = x.extension().string();
             fi_array.emplace_back(fi);
         }
-        std::cout<< "fi_array=" << json::serialize(fi_array) << std::endl;
+        // std::cout<< "fi_array=" << json::serialize(fi_array) << std::endl;
         return fi_array;
     }
 };
