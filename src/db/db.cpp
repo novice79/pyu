@@ -102,14 +102,14 @@ void DB::init()
     )";
     exec_sql(sql);
     int count = usr_count();
-    printf("usr_count=%d\n", count);
+    // printf("usr_count=%d\n", count);
     if(count == 0)
     {
         sql = R"(
             insert into user (pass) values ("admin");
         )";
         exec_sql(sql);
-        printf("begin insert default pass -----------------------------------\n");
+        // printf("begin insert default pass -----------------------------------\n");
     }
 }
 std::string DB::get_pass(){
@@ -119,7 +119,7 @@ std::string DB::get_pass(){
     sqlite3_stmt *stmt;
     int rc = sqlite3_prepare_v2(db_, sql.c_str(), -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
-        printf("get pass failed? This will never happen");
+        printf("get pass failed? This should never happen");
         return "";
     }
     sqlite3_step(stmt);

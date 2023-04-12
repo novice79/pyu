@@ -34,11 +34,11 @@ public:
         magic_loaded_ = ::magic_load( handle_, magic.string().c_str() ) == 0;
         if( magic_loaded_ )
         {
-            printf("load magic database succeed!\n");
+            printf("Load magic database succeed!\n");
         }
         else 
         {
-            printf("cannot load magic database -%s\n", magic_error(handle_));
+            printf("Can not load magic database -%s\n", magic_error(handle_));
 			magic_close(handle_);
         }
     }
@@ -46,8 +46,8 @@ public:
     {
         if( !magic_loaded_ )
         {
-            printf("cannot load magic file, determine file type failed\n");
-            return "";
+            printf("Can not load magic file, determine file type failed\n");
+            return "application/octet-stream";
         }
         return ::magic_file(handle_, path.c_str());
     }
