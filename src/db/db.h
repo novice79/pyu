@@ -16,7 +16,7 @@ private:
 public:
     DB(fs::path path = "py.db");
     ~DB();
-    std::string exec_sql(const std::string& sql);
+    json::object exec_sql(const std::string& sql);
     std::string get_pass();
 private:
     void init();

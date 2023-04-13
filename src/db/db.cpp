@@ -25,7 +25,7 @@ DB::~DB()
         sqlite3_close(db_);
     }
 }
-std::string DB::exec_sql(const std::string& sql)
+json::object DB::exec_sql(const std::string& sql)
 {
     json::object j;
     j["result"] = json::array();
@@ -34,7 +34,7 @@ std::string DB::exec_sql(const std::string& sql)
     if (rc != SQLITE_OK) {
         j["ret"] = -1;
         j["msg"] = sqlite3_errmsg(db_);
-        return json::serialize( j );
+        return j;
     }
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
         json::object row;
@@ -75,7 +75,7 @@ std::string DB::exec_sql(const std::string& sql)
         j.erase("result");
     }
     // if(j["result"].empty()) j.erase("result");
-    return json::serialize( j );
+    return j;
 }
 int DB::usr_count()
 {

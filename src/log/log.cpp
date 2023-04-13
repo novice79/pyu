@@ -14,6 +14,7 @@ Log::Log(fs::path log_path, std::string name)
     {
         fs::create_directories(log_path);
     }
+    // todo: fix multiple invoke result in multiple output
     auto prefix = (boost::format("%1%/%2%_") % log_path.string() % name).str();
     logging::add_file_log
     (

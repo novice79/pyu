@@ -18,18 +18,18 @@ int main(int argc, char **argv)
 
     auto db = pyu::create_db(exe_path / "py.db");
     l->debug("db pass=%1%\n", db->get_pass() );
-    l->warn( db->exec_sql("select * from user;") );
+    l->warn( json::serialize( db->exec_sql("select * from user;") ) );
     sol::state lua;
 	// open some common libraries
 	lua.open_libraries(sol::lib::base, sol::lib::package);
 	lua.script("print('lua bark bark bark!')");
     auto txt = "http://127.0.0.1:8888";
     pyu::QrToPng(exe_path / "aaa.png", txt).writeToPng();
-	std::cout << "write " << txt << " to " << exe_path / "aaa.png" << std::endl;
+	std::cout << "write QR code of '" << txt << "' to " << exe_path / "aaa.png" << std::endl;
 
     auto f = pyu::create_fm( exe_path / "magic.mgc" );
-    f->file_info( exe_path );
-    f->file_info( exe_path / "magic.mgc" );
+    cout<< json::serialize(f->file_info( exe_path ));
+    cout<< json::serialize(f->file_info( exe_path / "magic.mgc" ) ) << endl;;
     if(argc < 2) return 0;
     if( 2 == argc)
     {
