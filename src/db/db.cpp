@@ -77,13 +77,10 @@ json::object DB::exec_sql(const std::string& sql)
     // if(j["result"].empty()) j.erase("result");
     return j;
 }
-int DB::usr_count()
+int DB::count(std::string select)
 {
-    string sql = R"(
-        select count(*) from user;
-    )";
     sqlite3_stmt *stmt;
-    int rc = sqlite3_prepare_v2(db_, sql.c_str(), -1, &stmt, NULL);
+    int rc = sqlite3_prepare_v2(db_, select.c_str(), -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
         return 0;
     }
@@ -91,6 +88,13 @@ int DB::usr_count()
     int count = sqlite3_column_int(stmt, 0);
     sqlite3_finalize(stmt);
     return count;
+}
+int DB::usr_count()
+{
+    string sql = R"(
+        select count(*) from user;
+    )";
+    return count(sql);
 }
 void DB::init()
 {

@@ -18,6 +18,7 @@ public:
     ~DB();
     json::object exec_sql(const std::string& sql);
     std::string get_pass();
+    int count(std::string select);
 private:
     void init();
     int usr_count();
