@@ -1,12 +1,27 @@
 /* This is a simple HTTP(S) web server much like Python's SimpleHTTPServer */
 
 #include <pyu/pyu.h>
-
+#include <thread>
 
 using namespace std;
-
+void test_debounce()
+{
+    int x = 0;
+    // if use auto, can not deduction
+    std::function<int(int)> f = [&x](int i){
+        return x += i;
+    };
+    // debounce 500 milliseconds
+    auto dbf = pyu::debounce(f, 500);
+    for (int i = 0; i < 10; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        dbf(1);
+    }
+    cout<< "x=" << x << endl;
+}
 int main(int argc, char **argv) 
 {
+    test_debounce();
     auto exe_path{pyu::exe_path(argv[0])};
     auto l = pyu::create_logger( exe_path / "log", "aaa");
     l->trace("hello world: %1%\n", "david");

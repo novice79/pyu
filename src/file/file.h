@@ -3,6 +3,7 @@
 #include "magic.h"
 #include <string>
 #include <vector>
+#include <mutex>
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/json.hpp>
@@ -16,6 +17,7 @@ int call_main(MainFunc m, std::string args);
 class FileMgr
 {
     magic_t handle_;
+    std::mutex handle_mutex_;
     bool magic_loaded_;
 private:
     std::string concat_s(std::string s) 
@@ -44,6 +46,7 @@ public:
     }
     std::string file_type(const std::string &path)
     {
+        std::lock_guard<std::mutex> guard(handle_mutex_);
         if( !magic_loaded_ )
         {
             printf("Can not load magic file, determine file type failed\n");
