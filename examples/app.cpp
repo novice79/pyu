@@ -14,9 +14,10 @@ void test_debounce()
     // debounce 500 milliseconds
     auto dbf = pyu::debounce(f, 500);
     for (int i = 0; i < 10; ++i) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        dbf(1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        dbf(1) ? cout<< "hit " : cout<< "skip ";
     }
+    cout << endl;
     cout<< "x=" << x << endl;
 }
 int main(int argc, char **argv) 

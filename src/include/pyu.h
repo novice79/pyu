@@ -30,13 +30,15 @@ namespace pyu
         static auto start = high_resolution_clock::now();
         static std::mutex start_mutex;
         auto fn = [f=std::move(f), period](ARGS... args){
+            bool b(false);
             auto now = high_resolution_clock::now();
             std::lock_guard<std::mutex> guard(start_mutex);
             if (duration_cast<milliseconds>(now - start).count() > period){
                 f(args...);
                 start = high_resolution_clock::now();
+                b = true;
             }
-            // drop return value
+            return b;
         };
         return fn;
     }
