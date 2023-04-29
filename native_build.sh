@@ -12,8 +12,8 @@ elif [[ "$OSTYPE" == "win32" ]]; then
 else
     :
 fi
-dir="_build/$OSTYPE"
-examplePrefix="dist/$OSTYPE"
+dir="$PWD/_build/$OSTYPE"
+examplePrefix="$PWD/dist/$OSTYPE"
 PREFIX=${prefix:-$examplePrefix}
 while [ $# -gt 0 ]; do
   case "$1" in

@@ -3,7 +3,7 @@
 #include "magic.h"
 #include <string>
 #include <vector>
-#include <mutex>
+
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/json.hpp>
@@ -16,9 +16,7 @@ int call_main(MainFunc m, std::string args);
 
 class FileMgr
 {
-    magic_t handle_;
-    std::mutex handle_mutex_;
-    bool magic_loaded_;
+    const std::string magic_path_;
 private:
     std::string concat_s(std::string s) 
     {
@@ -31,28 +29,38 @@ private:
     }
 public:
     FileMgr(fs::path magic)
-    {
-        handle_ = ::magic_open(MAGIC_NONE | MAGIC_MIME);
-        magic_loaded_ = ::magic_load( handle_, magic.string().c_str() ) == 0;
-        if( magic_loaded_ )
-        {
-            printf("Load magic database succeed!\n");
-        }
-        else 
-        {
-            printf("Can not load magic database -%s\n", magic_error(handle_));
-			magic_close(handle_);
-        }
-    }
+    :magic_path_(magic.string())
+    {}
     std::string file_type(const std::string &path)
     {
-        std::lock_guard<std::mutex> guard(handle_mutex_);
-        if( !magic_loaded_ )
+        thread_local static magic_t s_t_handle = NULL;
+        thread_local static bool magic_loaded{false};
+        if (!s_t_handle)
+        {
+            // MAGIC_MIME: A shorthand for MAGIC_MIME_TYPE | MAGIC_MIME_ENCODING.
+            s_t_handle = ::magic_open(MAGIC_NONE | MAGIC_MIME);
+            if (s_t_handle == NULL)
+            {
+                printf("initialize magic library failed\n");
+                return "application/octet-stream";
+            }
+            if( ::magic_load( s_t_handle, magic_path_.c_str() ) != 0 )
+            {
+                printf("cannot load magic database -%s\n", magic_error(s_t_handle));
+                magic_close(s_t_handle);
+            }
+            else
+            {
+                magic_loaded = true;
+                printf("load magic database succeed!\n");
+            }
+        }
+        if( !magic_loaded )
         {
             printf("Can not load magic file, determine file type failed\n");
             return "application/octet-stream";
         }
-        return ::magic_file(handle_, path.c_str());
+        return ::magic_file(s_t_handle, path.c_str());
     }
     template<typename... Args>
     int compress(std::string zip, Args... args)
