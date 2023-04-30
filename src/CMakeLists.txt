@@ -117,7 +117,7 @@ VERBATIM
 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 COMMENT "Build libmagic and merge to pyu lib"
 )
-
+# objdum -f src/.libs/libmagic.a
 if (WIN32)
     set_target_properties(${PROJECT_NAME} PROPERTIES
         LINK_FLAGS "/WHOLEARCHIVE"

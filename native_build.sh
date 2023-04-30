@@ -27,6 +27,9 @@ while [ $# -gt 0 ]; do
       echo "example app always install to $examplePrefix "
       exit 0
       ;;
+    lib)
+      LIB_ONLY=true
+      ;;
     *)
       printf "remove $dir for clean build\n"
       rm -rf $dir
@@ -42,7 +45,7 @@ cmake -GNinja -H"src" -B"$dir/lib" \
 
 cmake --build "$dir/lib"
 cmake --install "$dir/lib"
-
+[ "$LIB_ONLY" = true ] && exit 0
 # build example exe
 cmake -GNinja -H"examples" -B$dir \
 -DCMAKE_FIND_ROOT_PATH="$PREFIX;$PRBUILT" \
