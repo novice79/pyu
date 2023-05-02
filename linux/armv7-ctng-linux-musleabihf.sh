@@ -36,7 +36,6 @@ PREFIX="${PREFIX%/armv7}/armv7"
 cmake -H"src" -B"$dir/lib" \
 -G Ninja \
 -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" \
--DTARGET_TRIPLET="armv7-ctng-linux-musleabihf" \
 -DCMAKE_FIND_ROOT_PATH=$PRBUILT \
 -DCMAKE_BUILD_TYPE=Release \
 -DCMAKE_INSTALL_PREFIX=$PREFIX

@@ -5,7 +5,7 @@
 #include "db.h"
 #include "QrToPng.h"
 #include "p7z.h"
-#include "file.h"
+#include "file.hpp"
 
 namespace pyu
 {

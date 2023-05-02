@@ -16,11 +16,12 @@ file(GLOB_RECURSE SOURCE_FILES
     "lua/*.c"
     "sqlite/*.c"
     "db/*.cpp"
+    "file/*.c"
 )
 file(GLOB HEADER_FILES 
     "include/pyu.h" 
-    "file/src/magic.h"
-    "file/file.h"
+    "file/magic.h"
+    "file/file.hpp"
     "7z/p7z.h"
     "qrgen/qrcodegen.hpp"
     "qrgen/QrToPng.h"
@@ -80,43 +81,7 @@ target_link_libraries(
     ${ZLIB_LIBRARIES}
     # 7za
 )
-if(ANDROID_ABI STREQUAL "armeabi-v7a")
-    set(FILE_HOST armv7a-linux-androideabi)
-elseif (ANDROID_ABI STREQUAL "arm64-v8a")
-    set(FILE_HOST aarch64-linux-android)
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "iOS")
-    set(FILE_HOST arm-apple-darwin)
-else()
-    set(FILE_HOST ${TARGET_TRIPLET})
-endif ()
 
-add_custom_command(TARGET ${PROJECT_NAME}
-POST_BUILD
-# COMMAND autoreconf -ivf ${CMAKE_CURRENT_SOURCE_DIR}/file
-COMMAND sh -c "\
-[[ -f ${CMAKE_CURRENT_SOURCE_DIR}/../env/${FILE_HOST}.sh ]] \
-&& source ${CMAKE_CURRENT_SOURCE_DIR}/../env/${FILE_HOST}.sh; \
-${CMAKE_CURRENT_SOURCE_DIR}/file/configure \
---host=${FILE_HOST} \
---prefix=${CMAKE_INSTALL_PREFIX} \
---disable-shared --enable-static \
---disable-zstdlib \
---disable-bzlib \
---disable-xzlib; \
-make clean; \
-make -j4; \
-pyu=`find . -name libpyu.a | tail -n 1`; \
-mv -v $pyu libpyu_.a; \
-rm -f *.o; \
-${CMAKE_AR} -x libpyu_.a; \
-${CMAKE_AR} -x src/.libs/libmagic.a; \
-${CMAKE_AR} -qcs $pyu *.o; \
-rm -f *.o"
-VERBATIM
-# COMMAND rm -f ${CMAKE_INSTALL_PREFIX}/lib/libmagic.*
-WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-COMMENT "Build libmagic and merge to pyu lib"
-)
 # objdum -f src/.libs/libmagic.a
 if (WIN32)
     set_target_properties(${PROJECT_NAME} PROPERTIES

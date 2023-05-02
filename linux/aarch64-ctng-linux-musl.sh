@@ -39,7 +39,6 @@ PREFIX="${PREFIX%/aarch64}/aarch64"
 cmake -H"src" -B"$dir/lib" \
 -G Ninja \
 -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" \
--DTARGET_TRIPLET="aarch64-ctng-linux-musl" \
 -DCMAKE_FIND_ROOT_PATH=$PRBUILT \
 -DCMAKE_BUILD_TYPE=Release \
 -DCMAKE_INSTALL_PREFIX=$PREFIX

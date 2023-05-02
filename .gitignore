@@ -36,3 +36,4 @@ docs/doxygen_output
 *.zip
 temp/
 /log/
+/bak/
