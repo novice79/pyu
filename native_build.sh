@@ -2,11 +2,11 @@
 set -e
 
 scirptName=$0
-
+# $OSTYPE not exist on alpine busybox, so use more reliable uname methond
 ostype=$(uname)
 if [[ "$ostype" == "Linux"* ]]; then
     PRBUILT="/data/clib-prebuilt/linux/x86_64"
-elif [[ "$OSTYPE" == "Darwin"* ]]; then
+elif [[ "$ostype" == "Darwin"* ]]; then
     PRBUILT="$HOME/clib-prebuilt/macos"
 else
     :
