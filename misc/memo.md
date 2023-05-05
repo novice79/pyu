@@ -58,3 +58,5 @@ ${CMAKE_SYSTEM_PROCESSOR}-novice-${CMAKE_SYSTEM_NAME}
 zig c++ -target armeb-linux-musleabihf
 
 rsync -aP pyu ub220:/data/my-app/
+
+adb push dist/android/arm64-v8a/bin/app /data/local/tmp/

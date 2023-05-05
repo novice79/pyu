@@ -59,30 +59,30 @@ message("lib7z=${lib7z}")
 # )
 message("CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}")
 foreach(t ${targets})
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        # using Clang
-        target_link_libraries(${t} -Wl,-all_load )
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        # using GCC
-        target_link_libraries(${t} -Wl,--whole-archive ${lib7z} -Wl,--no-whole-archive )
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-        # using Intel C++
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        # using Visual Studio C++
-        set_target_properties(${t} PROPERTIES LINK_FLAGS "/WHOLEARCHIVE" )
-    endif()
-    # if (WIN32)
-        
-    # elseif (APPLE)
-    #     set_target_properties(${t} PROPERTIES
-    #         LINK_FLAGS "-Wl,-all_load"
-    #     )
-    #     target_link_libraries(${t} ${lib7z})
-    #     # target_link_libraries(${t} -Wl,-force_load,${lib7z})
-    # else ()
-    #     # target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive 7za -Wl,--no-whole-archive )
+    # if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    #     # using Clang
+    #     target_link_libraries(${t} -Wl,-all_load )
+    # elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    #     # using GCC
     #     target_link_libraries(${t} -Wl,--whole-archive ${lib7z} -Wl,--no-whole-archive )
-    # endif ()
+    # elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+    #     # using Intel C++
+    # elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    #     # using Visual Studio C++
+    #     set_target_properties(${t} PROPERTIES LINK_FLAGS "/WHOLEARCHIVE" )
+    # endif()
+    if (WIN32)
+        
+    elseif (APPLE)
+        set_target_properties(${t} PROPERTIES
+            LINK_FLAGS "-Wl,-all_load"
+        )
+        target_link_libraries(${t} ${lib7z})
+        # target_link_libraries(${t} -Wl,-force_load,${lib7z})
+    else ()
+        # target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive 7za -Wl,--no-whole-archive )
+        target_link_libraries(${t} -Wl,--whole-archive ${lib7z} -Wl,--no-whole-archive )
+    endif ()
     target_link_libraries(
         ${t}
         pyu::pyu

@@ -142,7 +142,7 @@
 /* #undef HAVE_PIPE2 */
 
 /* Define to 1 if you have the `posix_spawnp' function. */
-#define HAVE_POSIX_SPAWNP 1
+// #define HAVE_POSIX_SPAWNP 1
 
 /* Define to 1 if you have the `pread' function. */
 #define HAVE_PREAD 1

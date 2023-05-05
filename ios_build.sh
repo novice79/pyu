@@ -35,6 +35,9 @@ while [ $# -gt 0 ]; do
     -prefix=* | --PREFIX=* | prefix=* | PREFIX=*)
       PREFIX="${1#*=}"
       ;;
+    lib)
+      LIB_ONLY=true
+      ;;
     -h | --help)
       echo "build example app(s) and install lib to target dir with:"
       echo "$scirptName prefix=\$targetDir"
@@ -61,7 +64,7 @@ cmake -H"src" -B"$dir/lib" \
 cmake --build "$dir/lib" --config Release -- -allowProvisioningUpdates
 cmake --install "$dir/lib"
 
-
+[ "$LIB_ONLY" = true ] && exit 0
 cmake -H"examples" -B"$dir" \
 -G Xcode \
 -DCMAKE_TOOLCHAIN_FILE="$PWD/cmake/ios.toolchain.cmake" \
