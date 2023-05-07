@@ -5,7 +5,8 @@ using namespace std;
 DB::DB(fs::path path)
 {
     fs::create_directories(path.parent_path());
-    int rc = sqlite3_open(path.string().c_str(), &db_);
+    int rc = sqlite3_open_v2(path.string().c_str(), &db_, 
+        SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX, 0);
     if (rc)
     {
         printf("Opened sqlite database failed: %s\n", sqlite3_errmsg(db_)); 
