@@ -1,39 +1,16 @@
-#! /bin/sh
-# SDK="iphoneos"
-# PREFIX=$HOME/clib-prebuilt/ios 
-# MIN_IOS_VERSION=13.0
-# OPT_FLAGS="-O3 -g3 -fembed-bitcode"
-# PLATFORM_ARM=${PLATFORM}
-# ARCH_FLAGS="-arch arm64 -arch arm64e" 
-# HOST_FLAGS="${ARCH_FLAGS} -miphoneos-version-min=${MIN_IOS_VERSION} -isysroot $(xcrun --sdk ${SDK} --show-sdk-path)"
-# CHOST="arm-apple-darwin"
-
-# export CC=$(xcrun --find --sdk "${SDK}" clang)
-# export CXX=$(xcrun --find --sdk "${SDK}" clang++)
-# export AR=$(xcrun --find --sdk iphoneos ar)
-# export objdump=$(xcrun --find --sdk iphoneos objdump)
-# export CPP=$(xcrun --find --sdk "${SDK}" cpp)
-# export CFLAGS="${HOST_FLAGS} ${OPT_FLAGS} -I${PREFIX}/include"
-# export CXXFLAGS="${HOST_FLAGS} ${OPT_FLAGS} -I${PREFIX}/include"
-# export LDFLAGS="${HOST_FLAGS} -L${PREFIX}/lib "
+#!/usr/bin/env bash
+#  ./ios_build.sh prefix=$HOME/clib-prebuilt/ios
 set -e
 scirptName=$0
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        PRBUILT="/data/clib-prebuilt/ios"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-        PRBUILT="$HOME/clib-prebuilt/ios"
-elif [[ "$OSTYPE" == "win32" ]]; then
-    :
-else
-    :
-fi
-dir="_build/ios"
-examplePrefix="dist/ios"
-PREFIX=${prefix:-$examplePrefix}
+ToolChainFile=""$PWD/cmake/ios.toolchain.cmake""
+PRBUILT="$HOME/clib-prebuilt/ios"
+PREFIX="$PWD/dist/ios"
+rm -rf "$PREFIX"
+prefix="$PREFIX"
 while [ $# -gt 0 ]; do
   case "$1" in
     -prefix=* | --PREFIX=* | prefix=* | PREFIX=*)
-      PREFIX="${1#*=}"
+      prefix="${1#*=}"
       ;;
     lib)
       LIB_ONLY=true
@@ -41,8 +18,8 @@ while [ $# -gt 0 ]; do
     -h | --help)
       echo "build example app(s) and install lib to target dir with:"
       echo "$scirptName prefix=\$targetDir"
-      echo "default lib installation dir: $examplePrefix --if without prefix provided"
-      echo "example app always install to $examplePrefix "
+      echo "default lib installation dir: $PREFIX --if without prefix provided"
+      echo "example app always install to $PREFIX "
       exit 0
       ;;
     *)
@@ -52,29 +29,50 @@ while [ $# -gt 0 ]; do
   shift
 done
 # CMAKE_PREFIX_PATH vs CMAKE_FIND_ROOT_PATH
+platforms=( 
+    "OS64:dev-arm64"
+    "SIMULATORARM64:sim-arm64"
+)
+# pa for platform-arch
+for pa in "${platforms[@]}" ; do
+# paa for pa array
+IFS=':' read -ra paa <<< "$pa"
+
+dir="$PWD/_build/${paa[1]}"
 cmake -H"src" -B"$dir/lib" \
 -G Xcode \
--DCMAKE_TOOLCHAIN_FILE="$PWD/cmake/ios.toolchain.cmake" \
+-DCMAKE_TOOLCHAIN_FILE="$ToolChainFile" \
 -DDEPLOYMENT_TARGET=13.0 \
 -DENABLE_BITCODE=OFF \
--DPLATFORM=OS64COMBINED \
--DCMAKE_FIND_ROOT_PATH="$PRBUILT" \
+-DPLATFORM="${paa[0]}" \
+-DCMAKE_FIND_ROOT_PATH="$PRBUILT/${paa[1]}" \
 -DCMAKE_BUILD_TYPE=Release \
--DCMAKE_INSTALL_PREFIX=$PREFIX
+-DCMAKE_INSTALL_PREFIX="$PREFIX/${paa[1]}"
 
 cmake --build "$dir/lib" --config Release -- -allowProvisioningUpdates
 cmake --install "$dir/lib"
 
-[ "$LIB_ONLY" = true ] && exit 0
+[[ $PREFIX != $prefix ]] && cp -rv "$PREFIX/${paa[1]}"/* "$prefix/${paa[1]}"
+$(xcrun --find --sdk iphoneos libtool) -static -o "$PREFIX/${paa[1]}/lib/libpyu-${paa[1]}.a" "$PREFIX/${paa[1]}"/lib/*.a
+[ "$LIB_ONLY" = true ] && continue
 cmake -H"examples" -B"$dir" \
 -G Xcode \
--DCMAKE_TOOLCHAIN_FILE="$PWD/cmake/ios.toolchain.cmake" \
+-DCMAKE_TOOLCHAIN_FILE="$ToolChainFile" \
 -DDEPLOYMENT_TARGET=13.0 \
 -DENABLE_BITCODE=OFF \
--DPLATFORM=OS64COMBINED \
--DCMAKE_FIND_ROOT_PATH="${PREFIX};${PRBUILT}" \
+-DPLATFORM="${paa[0]}" \
+-DCMAKE_FIND_ROOT_PATH="${PREFIX};${PRBUILT}/${paa[1]}" \
 -DCMAKE_BUILD_TYPE=Release \
--DCMAKE_INSTALL_PREFIX=$examplePrefix
+-DCMAKE_INSTALL_PREFIX="$PREFIX/${paa[1]}"
 # grep DEVELOPMENT_TEAM _build_ios/main.xcodeproj/project.pbxproj
 cmake --build $dir --config Release -- -allowProvisioningUpdates
 cmake --install $dir
+
+done
+
+xcodebuild -create-xcframework \
+-library $PREFIX/dev-arm64/lib/libpyu-dev-arm64.a \
+-headers $PREFIX/dev-arm64/include \
+-library $PREFIX/sim-arm64/lib/libpyu-sim-arm64.a \
+-headers $PREFIX/sim-arm64/include \
+-output "$prefix/pyu.xcframework"
